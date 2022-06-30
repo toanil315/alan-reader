@@ -1,0 +1,67 @@
+const API_KEY = '09982b2d1aaf43ce883eec7979bcf755';
+const BASE_URL = 'https://newsapi.org/v2/top-headlines?';
+let savedArticles = [];
+
+intent('Give me the lastest news', p => {
+    const NEWS_URL = `${BASE_URL}country=us&apiKey=${API_KEY}`
+    api.axios.get(NEWS_URL)
+        .then((response) => {
+            const data = response.data;
+            console.log(data.articles)
+            if(data.articles.length > 0) {
+                savedArticles = data.articles
+            }
+        
+            p.play({command: 'newHeadlines', articlesFromAlan: savedArticles});
+            p.play('Here is the lastest news. Do you want to listening something new?');
+            p.then(readingArticles)
+        })
+        .catch((error) => {
+            console.log(error);
+            p.play('Sorry something went wrong, please try again');
+        });
+});
+
+intent('Give me some $(category* (.*)) news', p => {
+    const NEWS_URL = `${BASE_URL}country=us&category=${p.category.value}&apiKey=${API_KEY}`
+    api.axios.get(NEWS_URL)
+        .then((response) => {
+            const data = response.data;
+            console.log(data.articles)
+            if(data.articles.length > 0) {
+                savedArticles = data.articles
+            }
+        
+            p.play({command: 'newHeadlines', articlesFromAlan: savedArticles});
+            p.play(`Here is the lastest ${p.category.value} news. Do you want to listening something new?`);
+            p.then(readingArticles)
+        })
+        .catch((error) => {
+            console.log(error);
+            p.play('Sorry something went wrong, please try again');
+        });
+});
+
+intent('Open article number $(number* (.*))', p => {
+    p.play({command: 'openArticle', url: savedArticles[p.number.value]?.url})
+    p.play('Opening');
+})
+
+intent('Go back', p => {
+    p.play({command: 'goBack'});
+    p.play('ok')
+})
+
+let readingArticles = context(() => {
+    intent('Yes', p => {
+        for(let i = 0; i <= 4; i++) {
+            p.play(savedArticles[i]?.title)
+        }
+    })
+    intent('No', p => {
+        p.play('Ok')
+    })
+});
+
+
+

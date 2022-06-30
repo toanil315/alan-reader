@@ -12,13 +12,17 @@ function App() {
   useEffect(() => {
     alanBtn({
       key: ALAN_KEY,
-      onCommand: ({ command, articles }) => {
+      onCommand: ({ command, articlesFromAlan, url}) => {
         if (command === "newHeadlines") {
-          setArticles(articles);
+          setArticles(articlesFromAlan);
           setIsShowingArticles(true);
         }
         if(command === "goBack") {
           setIsShowingArticles(false)
+        }
+        if(command === "openArticle") {
+          console.log(url)
+          window.open(url, '_blank');
         }
       },
     });
@@ -73,7 +77,7 @@ function App() {
           <IntroCard
             title="News by Categories"
             description="Categories: Business, Entertainment, General, Health, Science, Sports, Technology"
-            command={"Give me the latest Technology news"}
+            command={"Give me some Technology news"}
             bgColor="#1565C0"
           />
         </div>
